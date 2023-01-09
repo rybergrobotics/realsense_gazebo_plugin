@@ -128,6 +128,11 @@ bool GazeboRosRealsense::FillPointCloudHelper(sensor_msgs::PointCloud2 &point_cl
   double hfov = this->depthCam->HFOV().Radian();
   double fl = ((double)this->depthCam->ImageWidth()) / (2.0 * tan(hfov / 2.0));
 
+  double standard_deviation = sensorNoise_;
+  boost::mt19937 rng; rng.seed (static_cast<unsigned int> (time (0)));
+  boost::normal_distribution<> nd (0, standard_deviation);
+  boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
+
   // convert depth to point cloud
   for (uint32_t j = 0; j < rows_arg; j++)
   {
@@ -153,9 +158,12 @@ bool GazeboRosRealsense::FillPointCloudHelper(sensor_msgs::PointCloud2 &point_cl
         // hardcoded rotation rpy(-M_PI/2, 0, -M_PI/2) is built-in
         // to urdf, where the *_optical_frame should have above relative
         // rotation from the physical camera *_frame
-        *iter_x = depth * tan(yAngle);
-        *iter_y = depth * tan(pAngle);
-        *iter_z = depth;
+      
+        auto noise_multiplier = (depth - pointCloudCutOff_);
+
+        *iter_x = depth * tan(yAngle) + noise_multiplier * static_cast<float> (var_nor ());
+        *iter_y = depth * tan(pAngle) + noise_multiplier * static_cast<float> (var_nor ());
+        *iter_z = depth + noise_multiplier * static_cast<float> (var_nor ());
       }
       else  // point in the unseeable range
       {

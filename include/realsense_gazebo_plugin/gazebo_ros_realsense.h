@@ -14,6 +14,9 @@
 
 #include <memory>
 #include <string>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/variate_generator.hpp>
 
 namespace gazebo {
 /// \brief A plugin that simulates Real Sense camera streams.
