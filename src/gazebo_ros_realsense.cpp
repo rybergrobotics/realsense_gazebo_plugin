@@ -159,11 +159,11 @@ bool GazeboRosRealsense::FillPointCloudHelper(sensor_msgs::PointCloud2 &point_cl
         // to urdf, where the *_optical_frame should have above relative
         // rotation from the physical camera *_frame
       
-        auto noise_multiplier = (depth - pointCloudCutOff_);
+        // auto noise_multiplier = (depth - pointCloudCutOff_);
 
-        *iter_x = depth * tan(yAngle) + noise_multiplier * static_cast<float> (var_nor ());
-        *iter_y = depth * tan(pAngle) + noise_multiplier * static_cast<float> (var_nor ());
-        *iter_z = depth + noise_multiplier * static_cast<float> (var_nor ());
+        *iter_x = depth * tan(yAngle) +/* noise_multiplier * */ static_cast<float> (var_nor ());
+        *iter_y = depth * tan(pAngle) +/* noise_multiplier * */ static_cast<float> (var_nor ());
+        *iter_z = depth + /*noise_multiplier * */ static_cast<float> (var_nor ());
       }
       else  // point in the unseeable range
       {

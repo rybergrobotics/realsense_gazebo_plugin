@@ -27,6 +27,9 @@
 
 #include <memory>
 #include <string>
+#include <boost/random/normal_distribution.hpp>
+#include <boost/random/mersenne_twister.hpp>
+#include <boost/random/variate_generator.hpp>
 
 namespace gazebo {
 #define DEPTH_CAMERA_NAME "depth"

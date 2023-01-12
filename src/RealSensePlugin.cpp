@@ -251,6 +251,10 @@ void RealSensePlugin::OnNewDepthFrame() {
   msgs::ImageStamped msg;
 
   // Convert Float depth data to RealSense depth data
+  boost::mt19937 rng; rng.seed (static_cast<unsigned int> (time (0)));
+  double standard_deviation = sensorNoise_;
+  boost::normal_distribution<> nd (0, standard_deviation);
+  boost::variate_generator<boost::mt19937&, boost::normal_distribution<> > var_nor (rng, nd);
   const float *depthDataFloat = this->depthCam->DepthData();
   for (unsigned int i = 0; i < imageSize; ++i) {
     // Check clipping and overflow
@@ -260,7 +264,7 @@ void RealSensePlugin::OnNewDepthFrame() {
         depthDataFloat[i] < 0) {
       this->depthMap[i] = 0;
     } else {
-      this->depthMap[i] = (uint16_t)(depthDataFloat[i] / DEPTH_SCALE_M);
+      this->depthMap[i] = (uint16_t)((depthDataFloat[i] + static_cast<float> (var_nor ())) / DEPTH_SCALE_M) ;
     }
   }
 
